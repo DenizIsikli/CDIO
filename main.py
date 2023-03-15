@@ -18,25 +18,33 @@ ev3 = EV3Brick()
 Left_Motor = Motor(Port.A)
 Right_Motor = Motor(Port.B)
 
-# Wheel and axle meassurements
-Wheel_Diameter = 0
-Axle_Track = 0
+# Initialize "mouth" motor
+Mouth_Motor = Motor(Port.C)
 
-# Run the motor up to 500 degrees per second. To a target angle of 90 degrees.
-test_motor.run_target(500, 90)
+# Wheel and axle meassurements
+# Wheel_diameter is diameter of powering wheels
+# Axle_track is distance in mm between the points where both wheels touch ground
+Wheel_Diameter = 64
+Axle_Track = 292
+# 36 - 292 = 256 alt Axle_Track
 
 
 #DriveBase
-class DriveBase(Left_Motor, Right_Motor, Wheel_Diameter, Axle_Track)
+class DriveBase(Left_Motor, Right_Motor, Wheel_Diameter, Axle_Track):
+
+
+
+
 # left/right_motor is motor powering left/right wheel
-# wheel_diameter is diameter of powering wheels
-# axle_track is distance in mm between the points where both wheels touch ground
 
 # Drive forever until stop() is called: drive(drive_speed, turn_rate)
 # drive_speed is in mm/s
 # turn_rate is in deg/s
 drive()
 stop()
+
+# Run the motor up to 500 degrees per second. To a target angle of 90 degrees.
+test_motor.run_target(500, 90)
 
 #Measuring:
 distance() # gets estimated driven distance in mm
