@@ -30,29 +30,31 @@ Axle_Track = 292
 
 robot = DriveBase(Left_Motor,Right_Motor,Wheel_Diameter,Axle_Track)
 
+def robot_movement():
+
+    robot.straight(5000)
+    robot.turn(90)
+    robot.straight(2500)
+    robot.turn(90)
+    robot.straight(5000)
+    robot.turn(90)
+    robot.straight(1250)
+    robot.turn(90)
+
+def mouth_automation():
+    Mouth_Motor.run(10)
 
 
-#DriveBase
-class DriveBase(Left_Motor, Right_Motor, Wheel_Diameter, Axle_Track):
-    # Drive forever until stop() is called: drive(drive_speed, turn_rate)
-    # drive_speed is in mm/s
-    # turn_rate is in deg/s
-
-    drive()
-    stop()
-
-    # Run the motor up to 500 degrees per second. To a target angle of 90 degrees.
-    test_motor.run_target(500, 90)
-
-    #Measuring:
-    distance() # gets estimated driven distance in mm
-    angle() # gets estimated rotation angle of the drive base in deg
-    state () # returns current distance, drive speed, angle and turn rate
+def main():
+    robot_movement()
+    mouth_automation()
 
 
+if __name__ == "__main__":
+    main()
 
 
-    ####### Ide til program #######
+####### Ide til program #######
 
     # program start: (antaget kører med uret)
     # start clock(tid brugt)
@@ -66,3 +68,28 @@ class DriveBase(Left_Motor, Right_Motor, Wheel_Diameter, Axle_Track):
 
     # Loop så længe tid brugt <6 min:
     #     kør frem
+
+
+
+
+#DriveBase
+# class DriveBase(Left_Motor, Right_Motor, Wheel_Diameter, Axle_Track):
+#     # Drive forever until stop() is called: drive(drive_speed, turn_rate)
+#     # drive_speed is in mm/s
+#     # turn_rate is in deg/s
+
+#     drive()
+#     stop()
+
+#     # Run the motor up to 500 degrees per second. To a target angle of 90 degrees.
+#     test_motor.run_target(500, 90)
+
+#     #Measuring:
+#     distance() # gets estimated driven distance in mm
+#     angle() # gets estimated rotation angle of the drive base in deg
+#     state () # returns current distance, drive speed, angle and turn rate
+
+
+
+
+    
