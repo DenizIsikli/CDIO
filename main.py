@@ -14,44 +14,63 @@ from pybricks.media.ev3dev import SoundFile, ImageFile
 # Initialize the EV3 brick.
 ev3 = EV3Brick()
 
-# Initialize left and right motor
-Left_Motor = Motor(Port.A)
-Right_Motor = Motor(Port.B)
-
-# Initialize "mouth" motor
-Mouth_Motor = Motor(Port.C)
-
-# Wheel and axle meassurements
-# Wheel_diameter is diameter of powering wheels
-# Axle_track is distance in mm between the points where both wheels touch ground
-Wheel_Diameter = 64
-Axle_Track = 292
-# 36 - 292 = 256 alt Axle_Track
-
 robot = DriveBase(Left_Motor,Right_Motor,Wheel_Diameter,Axle_Track)
 
-def robot_movement():
+class RobotMovement():
+    # Initialize left and right motor
+    Left_Motor = Motor(Port.A)
+    Right_Motor = Motor(Port.B)
 
-    robot.straight(5000)
-    robot.turn(90)
-    robot.straight(2500)
-    robot.turn(90)
-    robot.straight(5000)
-    robot.turn(90)
-    robot.straight(1250)
-    robot.turn(90)
+    # Wheel and axle meassurements
+    # Wheel_diameter is diameter of powering wheels
+    # Axle_track is distance in mm between the points where both wheels touch ground
+    Wheel_Diameter = 64
+    Axle_Track = 292
+    # 36 - 292 = 256 alt Axle_Track
 
-def mouth_automation():
-    Mouth_Motor.run(10)
+    def movement():
+        robot.straight(5000)
+        robot.turn(90)
+        robot.straight(2500)
+        robot.turn(90)
+        robot.straight(5000)
+        robot.turn(90)
+        robot.straight(1250)
+        robot.turn(90)
+
+class RobotAutomation():
+    # Initialize "mouth" motor
+    Mouth_Motor = Motor(Port.C)
+
+    def mouth_automation():
+        Mouth_Motor.run(10)
 
 
-def main():
-    robot_movement()
-    mouth_automation()
+
+class ColorSensor(Port.S1):
+    # Initialize robot sensors
+    Color_Sensor = ColorSensor(Port.S1)
+    Infrared_Sensor = InfraredSensor(Port.S4)
+
+    def color_detection():
+        red_color = Color.RED
+
+        if(Color_Sensor.color == red_color):
+           robot.turn(-45)
+        # detect left wall when turning away from the cross object
+        #   if(InfraredSensor.distance) 
+
+    #if color_value == ColorSensor.color("red")
+
+class main():
+    def main():
+        RobotMovement.movement()
+        RobotAutomation.mouth_automation()
+        ColorSensor.color_detection()
 
 
 if __name__ == "__main__":
-    main()
+    main.main()
 
 
 ####### Ide til program #######
@@ -68,28 +87,4 @@ if __name__ == "__main__":
 
     # Loop så længe tid brugt <6 min:
     #     kør frem
-
-
-
-
-#DriveBase
-# class DriveBase(Left_Motor, Right_Motor, Wheel_Diameter, Axle_Track):
-#     # Drive forever until stop() is called: drive(drive_speed, turn_rate)
-#     # drive_speed is in mm/s
-#     # turn_rate is in deg/s
-
-#     drive()
-#     stop()
-
-#     # Run the motor up to 500 degrees per second. To a target angle of 90 degrees.
-#     test_motor.run_target(500, 90)
-
-#     #Measuring:
-#     distance() # gets estimated driven distance in mm
-#     angle() # gets estimated rotation angle of the drive base in deg
-#     state () # returns current distance, drive speed, angle and turn rate
-
-
-
-
     
