@@ -45,24 +45,32 @@ class RobotAutomation():
     def mouth_automation():
          # Initialize "mouth" motor
         Mouth_Motor = Motor(Port.C)
-
         Mouth_Motor.run(10)
 
 
 class CensorDetection():
     def color_detection():
         # Initialize robot sensors
-        Color_Sensor = ColorSensor(Port.S1)
-        Infrared_Sensor = InfraredSensor(Port.S4)
+        Color_Sensor1 = ColorSensor(Port.S1)
+        Color_Sensor2 = ColorSensor(Port.S2)
+        Ultrasonic_Sensor = UltrasonicSensor(Port.S4)
 
-        if Color_Sensor.color == Color.RED and Infrared_Sensor.distance == 20:
+        if Color_Sensor1.color == Color.RED and Ultrasonic_Sensor.distance == 20:
            robot.straight(-500) 
            robot.turn(45)
-
            distance = math.sqrt(30**2+30**2)
            robot.straight(distance)
-           robot.turn(-45) 
+           robot.turn(-90) 
+           robot.straight(distance)
+           robot.turn(45)
 
+        if Color_Sensor1.color == Color.WHITE:
+            robot.turn(45)
+            robot.straight(700)
+        elif Color_Sensor2.color == Color.WHITE:
+            robot.turn(-45)
+            robot.straight(700)
+            
 
 class main():
     def main():
