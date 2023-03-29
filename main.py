@@ -5,6 +5,7 @@ from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
+import math
 
 
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
@@ -16,19 +17,20 @@ ev3 = EV3Brick()
 
 robot = DriveBase(Left_Motor,Right_Motor,Wheel_Diameter,Axle_Track)
 
+
 class RobotMovement():
-    # Initialize left and right motor
-    Left_Motor = Motor(Port.A)
-    Right_Motor = Motor(Port.B)
-
-    # Wheel and axle meassurements
-    # Wheel_diameter is diameter of powering wheels
-    # Axle_track is distance in mm between the points where both wheels touch ground
-    Wheel_Diameter = 64
-    Axle_Track = 292
-    # 36 - 292 = 256 alt Axle_Track
-
     def movement():
+        # Initialize left and right motor
+        Left_Motor = Motor(Port.A)
+        Right_Motor = Motor(Port.B)
+
+        # Wheel and axle meassurements
+        # Wheel_diameter is diameter of powering wheels
+        # Axle_track is distance in mm between the points where both wheels touch ground
+        Wheel_Diameter = 64
+        Axle_Track = 292
+        # 36 - 292 = 256 alt Axle_Track
+
         robot.straight(5000)
         robot.turn(90)
         robot.straight(2500)
@@ -38,35 +40,35 @@ class RobotMovement():
         robot.straight(1250)
         robot.turn(90)
 
-class RobotAutomation():
-    # Initialize "mouth" motor
-    Mouth_Motor = Motor(Port.C)
 
+class RobotAutomation():
     def mouth_automation():
+         # Initialize "mouth" motor
+        Mouth_Motor = Motor(Port.C)
+
         Mouth_Motor.run(10)
 
 
-
-class ColorSensor(Port.S1):
-    # Initialize robot sensors
-    Color_Sensor = ColorSensor(Port.S1)
-    Infrared_Sensor = InfraredSensor(Port.S4)
-
+class CensorDetection():
     def color_detection():
-        red_color = Color.RED
+        # Initialize robot sensors
+        Color_Sensor = ColorSensor(Port.S1)
+        Infrared_Sensor = InfraredSensor(Port.S4)
 
-        if(Color_Sensor.color == red_color):
-           robot.turn(-45)
-        # detect left wall when turning away from the cross object
-        #   if(InfraredSensor.distance) 
+        if Color_Sensor.color == Color.RED and Infrared_Sensor.distance == 20:
+           robot.straight(-500) 
+           robot.turn(45)
 
-    #if color_value == ColorSensor.color("red")
+           distance = math.sqrt(30**2+30**2)
+           robot.straight(distance)
+           robot.turn(-45) 
+
 
 class main():
     def main():
         RobotMovement.movement()
         RobotAutomation.mouth_automation()
-        ColorSensor.color_detection()
+        CensorDetection.color_detection()
 
 
 if __name__ == "__main__":
