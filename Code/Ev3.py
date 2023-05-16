@@ -183,6 +183,7 @@ class sideFunctions():
             
                 if Color_Sensor1.color == Color.RED or Color_Sensor2.color == Color.RED and secondsMoved + ev3.timer < driveTime:
                     robot.stop()
+                    break
          
         secondsMoved = ev3.timer
         wait(100)
