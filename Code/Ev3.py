@@ -25,6 +25,7 @@ Mouth_Motor = Motor(Port.C)
 Color_Sensor1 = ColorSensor(Port.S1)
 Color_Sensor2 = ColorSensor(Port.S2)
 Ultrasonic_Sensor = UltrasonicSensor(Port.S4)
+Gyro_Sensor = GyroSensor(Port.S3)
 
 # Wheel and axle meassurements
 # Wheel_diameter is diameter of powering wheels
@@ -50,29 +51,69 @@ class RobotAutomation():
     def mouth_automation():
         Mouth_Motor.run(10)
 
-class CensorDetection():
-    def color_detection():
-        if Color_Sensor1.color == Color.RED and Ultrasonic_Sensor.distance == 20:
-           robot.straight(-500) 
-           robot.turn(45)
-           distance = math.sqrt(30**2+30**2)
-           robot.straight(distance)
-           robot.turn(-90) 
-           robot.straight(distance)
-           robot.turn(45)
+class sideFunctions():
+    def NinetyDegRight():
+        robot.stop #sæt bevægelsesmotorer til at (holde position) ved stop: mener du bare stop robotten
+        Gyro_Sensor.reset_angle(2)
+        robot.turn(97) #start bevægelse: højre: 97 med 20% hastighed: mener du drej til højre?
 
-        if Color_Sensor1.color == Color.WHITE:
-            robot.turn(45)
-            robot.straight(700)
-        elif Color_Sensor2.color == Color.WHITE:
-            robot.turn(-45)
-            robot.straight(700)
+        if(Gyro_Sensor.angle > 85.8):
+            robot.stop
+            wait(300)
+            Gyro_Sensor.reset_angle(2)
+            wait(300)
+            robot.stop #sæt bevægelsesmotorer til at (løbe i stå) ved stop: hvad menes der her
+
+    def NinetyDegLeft():
+        robot.stop
+        Gyro_Sensor.reset_angle(2)
+        robot.turn(-97) 
+
+        if(Gyro_Sensor.angle < -87.9):
+            robot.stop
+            wait(300)
+            Gyro_Sensor.reset_angle(2)
+            wait(300)
+            robot.stop
+
+    def ReleaseBall():
+        Left_Motor.run_time(20,0.35)
+        Right_Motor.run_time(20,0.35)
+        
+        Left_Motor.run_angle(20,-110)
+        Right_Motor.run_angle(20,-110)
+        wait(800)
+        Left_Motor.run_angle(20,110)
+        Right_Motor.run_angle(20,110)
+
+        Left_Motor.run_time(-20,0.35)
+        Right_Motor.run_time(-20,0.35)
+        wait(250)
+
+    def MoveCloseToWall():
+        Left_Motor.run_time(-20,0.5)
+        Right_Motor.run_time(-20,0.5)
+        wait(300)
+
+    def Restart():
+        print(f'Distance: {Ultrasonic_Sensor.distance(False)}')
+        wait(2000)
+        print(f'Angle: {Gyro_Sensor.angle}')
+        wait(5000)
+        Gyro_Sensor.reset_angle(2)
+        wait(1000)
+        sideFunctions.NinetyDegRight()
+
+        #gentag indtil(3 er farven rød): forstår ikke denne linje i metoden
+        #start bevægelse(2 vinkel)*gyroCorrectionFactor med speed % hastighed
+
+
 
 class main():
     def main():
         RobotMovement.movement()
         RobotAutomation.mouth_automation()
-        CensorDetection.color_detection()
+        
 
 
 if __name__ == "__main__":
