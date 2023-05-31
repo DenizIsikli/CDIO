@@ -10,6 +10,18 @@ import math
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 # Click "Open user guide" on the EV3 extension tab for more information.
 
+#Initialize variables
+speed = -30
+langBaneKøretid = 7.5
+timeToDrivePastObstacle = 3
+currentLaneNumber = 0
+gyroCorrectionFactor = 2
+totalNumberLanes = 4
+nextLaneTurnLeft = 1
+timeToDriveToGoal = 2.85
+switchLaneTime = 1.5
+roundNumber = 1
+VIPFirst = 0
 
 # Initialize the EV3 brick.
 ev3 = EV3Brick()
@@ -107,6 +119,13 @@ class sideFunctions():
         #gentag indtil(3 er farven rød): forstår ikke denne linje i metoden
         #start bevægelse(2 vinkel)*gyroCorrectionFactor med speed % hastighed
 
+        robot.stop
+        sideFunctions.MoveCloseToWall()
+        sideFunctions.NinetyDegLeft()
+
+        nextLaneTurnLeft = 1
+        currentLaneNumber = 0
+        roundNumber = 1
 
 
 class main():
