@@ -127,6 +127,16 @@ class sideFunctions():
         currentLaneNumber = 0
         roundNumber = 1
 
+    def ParkAtGoal_BallRelease():
+        sideFunctions.NinetyDegLeft()
+        #gentag indtil(3 er farven rød): forstår ikke denne linje i metoden
+        #start bevægelse(2 vinkel)*gyroCorrectionFactor med speed % hastighed
+        robot.stop
+        wait(300)
+
+
+        #nulstil timer: nulstil timeren på selve brikken eller?
+        
 
 class main():
     def main():
@@ -134,23 +144,6 @@ class main():
         RobotAutomation.mouth_automation()
         
 
-
 if __name__ == "__main__":
     main.main()
-
-
-####### Ide til program #######
-
-    # program start: (antaget kører med uret)
-    # start clock(tid brugt)
-    # start måltagning på højre motor (i antal omdrejninger eller mm) indtil dreje count = 4:
-    #     kør frem
-    #     mål side, indtil dreje count >end før
-    #     hvis afstand til væg <5 cm, stop højre motor, hvis motor stoppet >2 sec dreje count +=1
-
-    # Loop:
-    #     Kør målt afstand -'golfbots længde' 
-
-    # Loop så længe tid brugt <6 min:
-    #     kør frem
     
