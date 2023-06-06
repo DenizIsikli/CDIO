@@ -10,6 +10,13 @@ import math
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 # Click "Open user guide" on the EV3 extension tab for more information.
 
+# Funktioner som er blevet lavet:
+    #90DegRight
+    #90DegLeft
+    #Releaseball
+    #MoveCloseToWall
+    #Restart
+
 #Initialize variables
 speed = -30
 langBaneKøretid = 7.5
@@ -137,13 +144,10 @@ class sideFunctions():
 
         #nulstil timer: nulstil timeren på selve brikken eller?
         
-
 class main():
     def main():
         RobotMovement.movement()
         RobotAutomation.mouth_automation()
         
-
 if __name__ == "__main__":
     main.main()
-    
