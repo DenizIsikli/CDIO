@@ -1,21 +1,27 @@
 import cv2
 import numpy as np
+import time
 
 #Import of the Ev3 program
 import Ev3
 
 class openCV:
-    def mask_detection():
-        #Global capture
-        global cap
-        cap = cv2.VideoCapture(1)
+    #Global capture
+    global cap
+    cv2.VideoCapture(0)
 
+    # Font
+    font =  cv2.FONT_HERSHEY_SIMPLEX
+
+    def mask_detection():
         white_coordinates = []
         orange_coordinates = []
         robot_coordinates = []
 
-        font =  cv2.FONT_HERSHEY_SIMPLEX
-
+        count_white = 0
+        count_orange = 0
+        count_blue = 0
+       
         while True:
             # Capture a frame from the camera
             ret, frame = cap.read()
@@ -63,24 +69,42 @@ class openCV:
             orange_contours = [c for c in orange_contours if cv2.contourArea(c) > MIN_AREA_VIP_BALL]
             blue_contours = [c for c in blue_contours if cv2.contourArea(c) > MIN_AREA_ROBOT]
 
-            # Draw bounding rectangles around the detected objects
             for c in white_contours:
                 x, y, w, h =cv2.boundingRect(c)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
                 cv2.putText(frame, f'{x}, {y}', (x + 10, y), font, 0.5, (0, 255, 0), 1)
-                white_coordinates.append((x, y))               
+                white_coordinates.append((x, y))   
+                count_blue += 1
 
-            for c in orange_contours:
+                if count == len(white_contours):
+                     for coordinate in white_coordinates:
+                        x, y = coordinate
+                        print(f'White ball coordinate:{x}, {y}') 
+
+            for c in orange_contours: 
                 x, y, w, h = cv2.boundingRect(c)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 165, 255), 2)
                 cv2.putText(frame, f'{x}, {y}', (x + 10, y), font, 0.5, (0, 165, 255), 1)
                 orange_coordinates.append((x, y))
-                
+                count_orange += 1
+
+                if count == len(orange_contours):
+                    for coordinate in orange_coordinates:
+                        x, y = coordinate
+                        print(f'Orange ball coordinate:{x}, {y}') 
+
             for c in blue_contours:
                 x, y, w, h = cv2.boundingRect(c)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 165, 255), 2)
                 cv2.putText(frame, f'{x}, {y}', (x + 10, y), font, 0.5, (0, 165, 255), 1)
                 robot_coordinates.append((x, y))
+                count_blue += 1
+
+                if count_blue == len(blue_contours):
+                    for coordinate in robot_coordinates:
+                        x, y = coordinate
+                        print(f'Robot coordinate:{x}, {y}')
+
 
             for c in red_contours:
                 x, y, w, h = cv2.boundingRect(c)
@@ -90,65 +114,38 @@ class openCV:
             cv2.imshow("Object Detection", frame)
 
             # Exit the loop if contours are detected and coordinates are appended
-            if white_contours or orange_contours or blue_contours or red_contours:
-                break
+            #if white_contours or orange_contours or blue_contours or red_contours:
+            #    break
             
             # Exit the loop if the 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print("Closed\n-----------------------------------------------------------")
                 break
 
-        for coordinate in white_coordinates:
-            x, y = coordinate
-            print(f'White ball coordinate:{x}, {y}')       
-
-        for coordinate in orange_coordinates:
-            x, y = coordinate
-            print(f'Orange ball coordinate:{x}, {y}')     
-
-        for coordinate in robot_coordinates:
-            x, y = coordinate
-            print(f'Robot coordinate:{x}, {y}')
-
     def mark_coordinates(event, x, y, flags, param):
-        # Left mouse clicks
-        if event == cv2.EVENT_LBUTTONDOWN:
+            # to check if left mouse 
+            # button was clicked
+            if event == cv2.EVENT_LBUTTONDOWN:
+                # Draw a circle at the clicked position
+                cv2.circle(cap, (x, y), 5, (0, 0, 255), -1)
+                
+                font = cv2.FONT_HERSHEY_TRIPLEX
+                
+                # Display the coordinates
+                coordinates_text = f"({x}, {y})"
+                cv2.putText(cap, coordinates_text, (x + 10, y - 10),
+                            font, 0.5, (255, 255, 0), 2)
+                
+                # Show the image with the mark
+                cv2.imshow('Capture', cap)
     
-            # Displaying the coordinates on the Shell
-            print(x, ' ', y)
-    
-            # Displaying the coordinates on the image window
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            cv2.putText(cap, str(x) + ',' +
-                        str(y), (x,y), font,
-                        1, (255, 0, 0), 2)
-            cv2.imshow('Capture', cap)
-    
-        # Checking for right mouse clicks     
-        if event==cv2.EVENT_RBUTTONDOWN:
-    
-            # Displaying the coordinates on the Shell
-            print(x, ' ', y)
-    
-            # displaying the coordinates
-            # on the image window
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            b = cap[y, x, 0]
-            g = cap[y, x, 1]
-            r = cap[y, x, 2]
-            cv2.putText(cap, str(b) + ',' +
-                        str(g) + ',' + str(r),
-                        (x,y), font, 1,
-                        (255, 255, 0), 2)
-            cv2.imshow('Capture', cap)
-
 class main:
     def main():
         openCV.mask_detection()
 
         # Setting mouse handler for the image and calling the click_event() function
-        # cv2.setMouseCallback('Capture', openCV.mark_coordinates)
-        # openCV.mark_coordinates()
+        cv2.setMouseCallback('Capture', openCV.mark_coordinates)
+        openCV.mark_coordinates()
 
         # Release the camera
         cap.release()
