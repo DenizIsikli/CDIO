@@ -6,14 +6,11 @@ import time
 import Ev3
 
 class openCV:
-    #Global capture
-    global cap
-    cv2.VideoCapture(0)
+    def __init__(self, cap):
+        self.cap = cap
+        self.font = cv2.FONT_HERSHEY_SIMPLEX
 
-    # Font
-    font =  cv2.FONT_HERSHEY_SIMPLEX
-
-    def mask_detection():
+    def mask_detection(self):
         white_coordinates = []
         orange_coordinates = []
         robot_coordinates = []
@@ -24,7 +21,7 @@ class openCV:
        
         while True:
             # Capture a frame from the camera
-            ret, frame = cap.read()
+            ret, frame = self.cap.read()
 
             # Convert the captured image to the HSV color space
             hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -72,11 +69,11 @@ class openCV:
             for c in white_contours:
                 x, y, w, h =cv2.boundingRect(c)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
-                cv2.putText(frame, f'{x}, {y}', (x + 10, y), font, 0.5, (0, 255, 0), 1)
+                cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 0), 1)
                 white_coordinates.append((x, y))   
-                count_blue += 1
+                count_white += 1
 
-                if count == len(white_contours):
+                if count_white == len(white_contours):
                      for coordinate in white_coordinates:
                         x, y = coordinate
                         print(f'White ball coordinate:{x}, {y}') 
@@ -84,11 +81,11 @@ class openCV:
             for c in orange_contours: 
                 x, y, w, h = cv2.boundingRect(c)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 165, 255), 2)
-                cv2.putText(frame, f'{x}, {y}', (x + 10, y), font, 0.5, (0, 165, 255), 1)
+                cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 165, 255), 1)
                 orange_coordinates.append((x, y))
                 count_orange += 1
 
-                if count == len(orange_contours):
+                if count_orange == len(orange_contours):
                     for coordinate in orange_coordinates:
                         x, y = coordinate
                         print(f'Orange ball coordinate:{x}, {y}') 
@@ -96,7 +93,7 @@ class openCV:
             for c in blue_contours:
                 x, y, w, h = cv2.boundingRect(c)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 165, 255), 2)
-                cv2.putText(frame, f'{x}, {y}', (x + 10, y), font, 0.5, (0, 165, 255), 1)
+                cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 165, 255), 1)
                 robot_coordinates.append((x, y))
                 count_blue += 1
 
@@ -105,47 +102,47 @@ class openCV:
                         x, y = coordinate
                         print(f'Robot coordinate:{x}, {y}')
 
-
-            for c in red_contours:
+            # Red mask ready to be used, just not optimal
+            """ for c in red_contours:
                 x, y, w, h = cv2.boundingRect(c)
-                #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2) """
 
             # Show the original image with the detected objects
             cv2.imshow("Object Detection", frame)
 
             # Exit the loop if contours are detected and coordinates are appended
-            #if white_contours or orange_contours or blue_contours or red_contours:
-            #    break
+            """ if white_contours or orange_contours or blue_contours or red_contours:
+                break """
             
             # Exit the loop if the 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print("Closed\n-----------------------------------------------------------")
                 break
 
-    def mark_coordinates(event, x, y, flags, param):
-            # to check if left mouse 
-            # button was clicked
+    def mark_coordinates(self, event, x, y, flags, param):
+            # Left mouse button clicked
             if event == cv2.EVENT_LBUTTONDOWN:
                 # Draw a circle at the clicked position
-                cv2.circle(cap, (x, y), 5, (0, 0, 255), -1)
+                cv2.circle(self.frame, (x, y), 5, (0, 0, 255), -1)
                 
                 font = cv2.FONT_HERSHEY_TRIPLEX
                 
                 # Display the coordinates
                 coordinates_text = f"({x}, {y})"
-                cv2.putText(cap, coordinates_text, (x + 10, y - 10),
+                cv2.putText(self.frame, coordinates_text, (x + 10, y - 10),
                             font, 0.5, (255, 255, 0), 2)
                 
                 # Show the image with the mark
-                cv2.imshow('Capture', cap)
+                cv2.imshow("Object Detection", self.frame)
     
 class main:
     def main():
-        openCV.mask_detection()
-
+        cap = cv2.VideoCapture(0)
+        openCV(cap).mask_detection()
+  
         # Setting mouse handler for the image and calling the click_event() function
-        cv2.setMouseCallback('Capture', openCV.mark_coordinates)
-        openCV.mark_coordinates()
+        cv2.setMouseCallback("Object Detection", openCV(cap).mark_coordinates)
+        cv2.waitKey(0)
 
         # Release the camera
         cap.release()
