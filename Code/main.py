@@ -86,10 +86,10 @@ class openCV:
                 self.white_coordinates.append((x, y))   
                 count_white += 1
 
-                if count_white == len(white_contours):
+                """ if count_white == len(white_contours):
                      for coordinate in self.white_coordinates:
                         x, y = coordinate
-                        print(f'White ball coordinate:{x}, {y}') 
+                        print(f'White ball coordinate:{x}, {y}')  """
 
             for c in orange_contours: 
                 x, y, w, h = cv2.boundingRect(c)
@@ -98,10 +98,10 @@ class openCV:
                 self.orange_coordinates.append((x, y))
                 count_orange += 1
 
-                if count_orange == len(orange_contours):
+                """ if count_orange == len(orange_contours):
                     for coordinate in self.orange_coordinates:
                         x, y = coordinate
-                        print(f'Orange ball coordinate:{x}, {y}') 
+                        print(f'Orange ball coordinate:{x}, {y}')  """
 
             for c in blue_contours:
                 x, y, w, h = cv2.boundingRect(c)
@@ -110,17 +110,15 @@ class openCV:
                 self.robot_coordinates.append((x, y))
                 count_blue += 1
 
-                if count_blue == len(blue_contours):
+                """ if count_blue == len(blue_contours):
                     for coordinate in self.robot_coordinates:
                         x, y = coordinate
-                        print(f'Robot coordinate:{x}, {y}')
-
-            
-
-            # Red mask ready to be used, just not optimal
-            """ for c in red_contours:
-                x, y, w, h = cv2.boundingRect(c)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2) """
+                        print(f'Robot coordinate:{x}, {y}') """
+              
+            print(f'White ball coordinate:{x}, {y}')  
+            print(f'Orange ball coordinate:{x}, {y}')    
+            print(f'Robot coordinate:{x}, {y}')
+            time.sleep(1)
 
             # Show the original image with the detected objects
             cv2.imshow("Object Detection", frame)
@@ -133,8 +131,6 @@ class openCV:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print("Closed\n-----------------------------------------------------------")
                 break
-
-        print(self.white_coordinates)
 
     def mark_coordinates(self, event, x, y, flags, cap):
             click_point_cord = []
