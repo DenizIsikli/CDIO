@@ -25,12 +25,14 @@ class openCV:
         self.white_coordinates = []
         self.orange_coordinates = []
         self.red_coordinates = []
-        self.robot_coordinates = []
+        self.green_coordinates = []
+        self.yellow_coordinates = []
 
         self.count_white = 0
         self.count_orange = 0
         self.count_red = 0
-        self.count_blue = 0
+        self.count_green = 0
+        self.count_yellow = 0
 
         self.min_distance = float('inf')
 
@@ -50,38 +52,43 @@ class openCV:
             orange_upper = np.array([25, 255, 255])
             red_lower = np.array([180,50,50])
             red_upper = np.array([200,255,255])
-            blue_lower = np.array([100, 100, 0])
-            blue_upper = np.array([255, 255, 10])
+            green_lower = np.array([55, 45, 45])
+            green_upper = np.array([70, 255, 255])
+            yellow_lower = np.array([20, 100, 100])
+            yellow_upper = np.array([30, 255, 255])
 
             # Create masks for white, red, and orange colors using the color ranges
             white_mask = cv2.inRange(hsv_frame, white_lower, white_upper)
             orange_mask = cv2.inRange(hsv_frame, orange_lower, orange_upper)
             red_mask = cv2.inRange(hsv_frame, red_lower, red_upper)
-            blue_mask = cv2.inRange(hsv_frame, blue_lower, blue_upper)
-
+            green_mask = cv2.inRange(hsv_frame, green_lower, green_upper)
+            yellow_mask = cv2.inRange(hsv_frame, yellow_lower, yellow_upper)
             # Morphological operations to remove noise and fill gaps in the masks
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
             white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_OPEN, kernel)
             orange_mask = cv2.morphologyEx(orange_mask, cv2.MORPH_OPEN, kernel)
             red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel)
-            blue_mask = cv2.morphologyEx(blue_mask, cv2.MORPH_OPEN, kernel)
+            green_mask = cv2.morphologyEx(green_mask, cv2.MORPH_OPEN, kernel)
+            yellow_mask = cv2.morphologyEx(yellow_mask, cv2.MORPH_OPEN, kernel)
 
             # Find contours in the masks
             white_contours, _ = cv2.findContours(white_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             orange_contours, _ = cv2.findContours(orange_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             red_contours, _ = cv2.findContours(red_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            blue_contours, _ = cv2.findContours(blue_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            green_contours, _ = cv2.findContours(green_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            yellow_contours, _ = cv2.findContours(yellow_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             # Filter out contours based on their area or other criteria
-            MIN_AREA_TABLE_TENNIS_BALLS = 30
+            MIN_AREA_WHITE_BALL = 30
+            MIN_AREA_ORANGE_BALL = 30
             MIN_AREA_WALLS = 100
-            MIN_AREA_VIP_BALL = 30
             MIN_AREA_ROBOT = 50
 
-            white_contours = [c for c in white_contours if cv2.contourArea(c) > MIN_AREA_TABLE_TENNIS_BALLS]
-            orange_contours = [c for c in orange_contours if cv2.contourArea(c) > MIN_AREA_VIP_BALL]
+            white_contours = [c for c in white_contours if cv2.contourArea(c) > MIN_AREA_WHITE_BALL]
+            orange_contours = [c for c in orange_contours if cv2.contourArea(c) > MIN_AREA_ORANGE_BALL]
             red_contours = [c for c in red_contours if cv2.contourArea(c) > MIN_AREA_WALLS]
-            blue_contours = [c for c in blue_contours if cv2.contourArea(c) > MIN_AREA_ROBOT]
+            green_contours = [c for c in green_contours if cv2.contourArea(c) > MIN_AREA_ROBOT]
+            yellow_contours = [c for c in yellow_contours if cv2.contourArea(c) > MIN_AREA_ROBOT]
 
             def white_coords():
                 for c in white_contours:
@@ -95,7 +102,6 @@ class openCV:
                     for coordinate in self.white_coordinates:
                         x, y = coordinate
                         print(f'White ball coordinate:{x}, {y}')
-
             def orange_coords():
                 for c in orange_contours: 
                     x, y, w, h = cv2.boundingRect(c)
@@ -108,37 +114,48 @@ class openCV:
                     for coordinate in self.orange_coordinates:
                         x, y = coordinate
                         print(f'Orange ball coordinate:{x}, {y}')
-
             def red_coords():
                 for c in red_contours:
                     x, y, w, h = cv2.boundingRect(c)
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 165, 255), 1)
+                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 0, 255), 1)
                     self.red_coordinates.append((x, y))
                     self.count_red += 1
 
-                    #if self.count_red == len(red_contours):7
+                    #if self.count_red == len(red_contours):
                     for coordinate in self.red_coordinates:
                         x, y = coordinate
                         print(f'Red obstacle coordinate:{x}, {y}') 
-
-            def blue_coords():
-                for c in blue_contours:
+            def green_coords():
+                for c in green_contours:
                     x, y, w, h = cv2.boundingRect(c)
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 165, 255), 1)
-                    self.robot_coordinates.append((x, y))
-                    self.count_blue += 1
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
+                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 0), 1)
+                    self.green_coordinates.append((x, y))
+                    self.count_green += 1
 
-                    #if self.count_blue == len(blue_contours):
-                    for coordinate in self.robot_coordinates:
+                    #if self.count_green == len(green_contours):
+                    for coordinate in self.green_coordinates:
                         x, y = coordinate
-                        print(f'Robot coordinate:{x}, {y}')
+                        print(f'Green coordinate:{x}, {y}')
+            def yellow_coords():
+                for c in yellow_contours:
+                    x, y, w, h = cv2.boundingRect(c)
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
+                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 255), 1)
+                    self.yellow_coordinates.append((x, y))
+                    self.count_yellow += 1
 
-            white_coords()
-            orange_coords()
-            red_coords()
-            blue_coords()
+                    #if self.count.yellow == len(yellow_contours):
+                    for coordinate in self.yellow_coordinates:
+                        x, y = coordinate
+                        print(f'Yellow coordinate:{x}, {y}')
+
+            #white_coords()
+            #orange_coords()
+            #red_coords()
+            green_coords()
+            yellow_coords()
 
             # Show the original image with the detected objects
             cv2.imshow("Object Detection", frame)
