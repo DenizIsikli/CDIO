@@ -28,7 +28,8 @@ class openCV:
         self.red_coordinates = []
         self.green_coordinates = []
         self.yellow_coordinates = []
-        self.click_point_cord = []
+        self.click_point_cord_corners = []
+        self.click_point_cord_goals = []
 
         self.count_white = 0
         self.count_orange = 0
@@ -41,9 +42,12 @@ class openCV:
     def mask_detection(self):
         def mouse_callback(event, x, y, flags, param):
             if event == cv2.EVENT_LBUTTONDOWN:
-                if len(self.click_point_cord) < 6:
-                    self.click_point_cord.append((x, y))
-                    print(f'Mouse_Callback coordinate: {x}, {y}')
+                if len(self.click_point_cord_corners) < 4:
+                    self.click_point_cord_corners.append((x, y))
+                    print(f'Field corner coordinates: {x}, {y}')
+                elif len(self.click_point_cord_goals) < 2:
+                    self.click_point_cord_goals.append((x, y))
+                    print(f'Field goal coordinates: {x}, {y}')
                 else:
                     print("Maximum number of clicks reached.")
 
@@ -54,10 +58,16 @@ class openCV:
             # Capture a frame from the camera
             ret, self.frame = self.cap.read()
 
-            for point in self.click_point_cord:
-                x, y = point
-                cv2.circle(self.frame, (x, y), 3, (0, 255, 0), -1)
-                cv2.putText(self.frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 0), 1)
+            for point in self.click_point_cord_corners:
+                if len(self.click_point_cord_corners) < 5:
+                    x, y = point
+                    cv2.circle(self.frame, ((x, y)), 3, (0, 255, 0), -1)
+                    cv2.putText(self.frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 0), 1)
+            for point in self.click_point_cord_goals:
+                if len(self.click_point_cord_goals) < 3:
+                    x, y = point
+                    cv2.circle(self.frame, ((x, y)), 3, (255, 0, 0), -1)
+                    cv2.putText(self.frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (255, 0, 0), 1)
 
             # Convert the captured image to the HSV color space
             hsv_frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
@@ -178,9 +188,13 @@ class openCV:
             # Show the original image with the detected objects
             cv2.imshow("Object Detection", self.frame)
 
-            # Print out the click point coords when pressing 'p'
-            if cv2.waitKey(1) & 0xFF ==ord('p'):
-                print(f'Click coordinate list: {self.click_point_cord}')
+            
+            # Print out the click point coords for corners 'o'
+            if cv2.waitKey(1) & 0xFF == ord('o'):
+                print(f'Corner coordinate list: {self.click_point_cord_corners}')
+            # Print out the click point coords for goals 'p' 
+            if cv2.waitKey(1) & 0xFF == ord('p'):
+                print(f'Goal coordinate list: {self.click_point_cord_goals}') 
             # Exit the loop if the 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print("Closed---------------------------------------------------------------------")
