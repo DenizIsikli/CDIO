@@ -178,7 +178,10 @@ class openCV:
             # Show the original image with the detected objects
             cv2.imshow("Object Detection", self.frame)
 
-                # Exit the loop if the 'q' key is pressed
+            # Print out the click point coords when pressing 'p'
+            if cv2.waitKey(1) & 0xFF ==ord('p'):
+                print(f'Click coordinate list: {self.click_point_cord}')
+            # Exit the loop if the 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print("Closed---------------------------------------------------------------------")
                 break
