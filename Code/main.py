@@ -20,6 +20,7 @@ import Ev3
 class openCV:
     def __init__(self, cap):
         self.cap = cap
+        self.frame = None
         self.font = cv2.FONT_HERSHEY_SIMPLEX
 
         self.white_coordinates = []
@@ -27,6 +28,7 @@ class openCV:
         self.red_coordinates = []
         self.green_coordinates = []
         self.yellow_coordinates = []
+        self.click_point_cord = []
 
         self.count_white = 0
         self.count_orange = 0
@@ -37,13 +39,28 @@ class openCV:
         self.min_distance = float('inf')
 
     def mask_detection(self):
+        def mouse_callback(event, x, y, flags, param):
+            if event == cv2.EVENT_LBUTTONDOWN:
+                if len(self.click_point_cord) < 6:
+                    self.click_point_cord.append((x, y))
+                    print(f'Mouse_Callback coordinate: {x}, {y}')
+                else:
+                    print("Maximum number of clicks reached.")
+
+        cv2.namedWindow("Object Detection")
+        cv2.setMouseCallback("Object Detection", mouse_callback)
+
         while True:
             # Capture a frame from the camera
-            global frame
-            ret, frame = self.cap.read()
+            ret, self.frame = self.cap.read()
+
+            for point in self.click_point_cord:
+                x, y = point
+                cv2.circle(self.frame, (x, y), 3, (0, 255, 0), -1)
+                cv2.putText(self.frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 0), 1)
 
             # Convert the captured image to the HSV color space
-            hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            hsv_frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2HSV)
 
             # Define the color ranges for white, red, and orange
             white_lower = np.array([0, 0, 200])
@@ -63,6 +80,7 @@ class openCV:
             red_mask = cv2.inRange(hsv_frame, red_lower, red_upper)
             green_mask = cv2.inRange(hsv_frame, green_lower, green_upper)
             yellow_mask = cv2.inRange(hsv_frame, yellow_lower, yellow_upper)
+            
             # Morphological operations to remove noise and fill gaps in the masks
             kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
             white_mask = cv2.morphologyEx(white_mask, cv2.MORPH_OPEN, kernel)
@@ -93,8 +111,8 @@ class openCV:
             def white_coords():
                 for c in white_contours:
                     x, y, w, h = cv2.boundingRect(c)
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
-                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 0), 1)
+                    cv2.rectangle(self.frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
+                    cv2.putText(self.frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 0), 1)
                     self.white_coordinates.append((x, y))   
                     self.count_white += 1
 
@@ -105,8 +123,8 @@ class openCV:
             def orange_coords():
                 for c in orange_contours: 
                     x, y, w, h = cv2.boundingRect(c)
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 165, 255), 2)
-                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 165, 255), 1)
+                    cv2.rectangle(self.frame, (x, y), (x + w, y + h), (0, 165, 255), 2)
+                    cv2.putText(self.frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 165, 255), 1)
                     self.orange_coordinates.append((x, y))
                     self.count_orange += 1
 
@@ -117,8 +135,8 @@ class openCV:
             def red_coords():
                 for c in red_contours:
                     x, y, w, h = cv2.boundingRect(c)
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 0, 255), 1)
+                    cv2.rectangle(self.frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                    cv2.putText(self.frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 0, 255), 1)
                     self.red_coordinates.append((x, y))
                     self.count_red += 1
 
@@ -129,8 +147,8 @@ class openCV:
             def green_coords():
                 for c in green_contours:
                     x, y, w, h = cv2.boundingRect(c)
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
-                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 0), 1)
+                    cv2.rectangle(self.frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
+                    cv2.putText(self.frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 0), 1)
                     self.green_coordinates.append((x, y))
                     self.count_green += 1
 
@@ -141,8 +159,8 @@ class openCV:
             def yellow_coords():
                 for c in yellow_contours:
                     x, y, w, h = cv2.boundingRect(c)
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
-                    cv2.putText(frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 255), 1)
+                    cv2.rectangle(self.frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
+                    cv2.putText(self.frame, f'{x}, {y}', (x + 10, y), self.font, 0.5, (0, 255, 255), 1)
                     self.yellow_coordinates.append((x, y))
                     self.count_yellow += 1
 
@@ -158,28 +176,13 @@ class openCV:
             yellow_coords()
 
             # Show the original image with the detected objects
-            cv2.imshow("Object Detection", frame)
+            cv2.imshow("Object Detection", self.frame)
 
-            # Exit the loop if the 'q' key is pressed
+                # Exit the loop if the 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                print("Closed\n-----------------------------------------------------------")
+                print("Closed---------------------------------------------------------------------")
                 break
 
-    def mark_coordinates(self, event, x, y, flags, cap):
-            click_point_cord = []
-
-            # Left mouse button clicked
-            if event == cv2.EVENT_LBUTTONDOWN:
-                # Draw a circle at the clicked position
-                cv2.circle(frame, (x, y), 5, (0, 0, 255), -1)
-                click_point_cord.append(x, y)
-                
-                # Display the coordinates
-                coordinates_text = f"({x}, {y})" 
-                cv2.putText(self.frame, coordinates_text, (x + 10, y - 10),
-                            self.font, 0.5, (255, 255, 0), 2)
-                cv2.imshow("Object Detection", frame)
-    
     def driveBase():
         # Initialize the EV3 brick.
         ev3 = EV3Brick()
@@ -226,11 +229,7 @@ class main:
 
         cv_obj.mask_detection()
 
-        # Setting mouse handler for the image and calling the click_event() function
-        cv2.setMouseCallback("Object Detection", cv_obj.mark_coordinates)
-
-        # Release the camera
-        cap.release()
+        # Release the camera/ Destroy the windows
         cv2.destroyAllWindows()
 
 #Second main method for the Ev3 program
