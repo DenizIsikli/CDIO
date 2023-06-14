@@ -188,17 +188,15 @@ class openCV:
             # Show the original image with the detected objects
             cv2.imshow("Object Detection", self.frame)
 
-            
             # Print out the click point coords for corners 'o'
             if cv2.waitKey(1) & 0xFF == ord('o'):
                 print(f'Corner coordinate list: {self.click_point_cord_corners}')
             # Print out the click point coords for goals 'p' 
             if cv2.waitKey(1) & 0xFF == ord('p'):
                 print(f'Goal coordinate list: {self.click_point_cord_goals}') 
-            # Exit the loop if the 'q' key is pressed
+            # Return True if the 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                print("Closed---------------------------------------------------------------------")
-                break
+                return True
 
     def driveBase():
         # Initialize the EV3 brick.
@@ -228,26 +226,46 @@ class openCV:
         robot = DriveBase(Left_Motor,Right_Motor,Wheel_Diameter,Axle_Track)
 
     def distance_calc(self):
-        for robot_coordinate in self.robot_coordinates:
-            for white_ball_coordinate in self.white_coordinates:
-                x_robot, y_robot = robot_coordinate
-                x_white_ball, y_white_ball = white_ball_coordinate
+        front_side = self.yellow_coordinates[0]
+        back_side = self.green_coordinates[0]
 
-                distance = ((x_white_ball - x_robot)**2 + (y_white_ball - y_robot)**2)**0.5
-                angle = math.atan2(y_white_ball - y_robot, x_white_ball - y_robot)
+        x_front, y_front = front_side
+        x_back, y_back = back_side
 
-                if distance < self.min_distance:
-                    robot.stop
-                
+        for ball_coords in self.white_coordinates:
+            x_ball, y_ball = ball_coords
+
+             # Calculate the distance
+            distance = math.sqrt((x_ball - x_front)**2 + (y_ball - y_front)**2)
+
+
+            green_to_yellow_vector = (x_front - x_back, y_front - y_back)
+            yellow_to_ball_vector = (x_ball - x_front, y_ball - y_front)
+
+            robot_line = green_to_yellow_vector - yellow_to_ball_vector
+
+            # Calculate the angle
+            angle_rad = math.atan2(y_ball - y_front, x_ball - x_front)
+            angle_deg = math.degrees(angle_rad)
+
+            # Set the robots new coordinate
+            x_front, y_front = x_ball, y_ball
+
+            print(f'Distance: {distance}, Angle degrees: {angle_deg}')
+
 class main:
     def main():
         cap = cv2.VideoCapture(0)
         cv_obj = openCV(cap)
 
         cv_obj.mask_detection()
+        cv_obj.distance_calc()
 
-        # Release the camera/ Destroy the windows
-        cv2.destroyAllWindows()
+        # Exit the loop if the 'q' key is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            print("Closed---------------------------------------------------------------------")
+            # Release the camera/ Destroy the windows
+            cv2.destroyAllWindows()
 
 #Second main method for the Ev3 program
 #class main2:
