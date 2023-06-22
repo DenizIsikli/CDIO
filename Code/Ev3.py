@@ -171,16 +171,19 @@ class sideFunctions():
         else:
             ev3.resetTimer()
 
-            while Color_Sensor2.color == Color.RED or Color_Sensor1.color == Color.RED and secondsMoved + ev3.timer < driveTime - driveTimeBuffer:
+            while True:
+                driveTimeBuffer = 3
                 Left_Motor.run_angle(speed, 2 + gyroCorrectionFactor)
                 Right_Motor.run_angle(speed, 2 + gyroCorrectionFactor)
 
                 if Color_Sensor1.color == Color.RED and Color_Sensor2.color != Color.RED:
                     wait(50)
                 if Color_Sensor2.color != Color.RED:
-                    sideFunctions.SweeperStallDetection() 
-
-        robot.stop
+                    sideFunctions.SweeperStallDetection()  
+            
+                if Color_Sensor1.color == Color.RED or Color_Sensor2.color == Color.RED and secondsMoved + ev3.timer < driveTime:
+                    robot.stop()
+         
         secondsMoved = ev3.timer
         wait(100)
 
