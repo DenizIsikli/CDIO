@@ -238,7 +238,6 @@ class openCV:
              # Calculate the distance
             distance = math.sqrt((x_ball - x_front)**2 + (y_ball - y_front)**2)
 
-
             green_to_yellow_vector = (x_front - x_back, y_front - y_back)
             yellow_to_ball_vector = (x_ball - x_front, y_ball - y_front)
 

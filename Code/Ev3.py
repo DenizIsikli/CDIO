@@ -16,6 +16,7 @@ import math
     #Releaseball
     #MoveCloseToWall
     #Restart
+    #SweepOneLane
 
 #Initialize variables
 speed = -30
@@ -29,6 +30,8 @@ timeToDriveToGoal = 2.85
 switchLaneTime = 1.5
 roundNumber = 1
 VIPFirst = 0
+secondsMoved = 0
+driveTime = 0
 
 # Initialize the EV3 brick.
 ev3 = EV3Brick()
@@ -143,7 +146,50 @@ class sideFunctions():
 
 
         #nulstil timer: nulstil timeren på selve brikken eller?
-        
+
+
+    # DELETE AFTER
+    def SweepOuterLane():
+        return 0
+    def SweeperStallDetection():
+        return 0
+    def AvoidObStacle():
+        return 0
+    def MoveCloseToWall():
+        return 0
+
+    def SweepOneLane():
+        driveTimeBuffer = 3
+        avoidLeft = 1
+        headOnCollision = 1
+
+        Gyro_Sensor.reset_angle(2)
+        wait(300)
+        if currentLaneNumber == 1 or currentLaneNumber == 4:
+            sideFunctions.SweepOuterLane(0)
+            sideFunctions.MoveCloseToWall()
+        else:
+            ev3.resetTimer()
+
+            while Color_Sensor2.color == Color.RED or Color_Sensor1.color == Color.RED and secondsMoved + ev3.timer < driveTime - driveTimeBuffer:
+                Left_Motor.run_angle(speed, 2 + gyroCorrectionFactor)
+                Right_Motor.run_angle(speed, 2 + gyroCorrectionFactor)
+
+                if Color_Sensor1.color == Color.RED and Color_Sensor2.color != Color.RED:
+                    wait(50)
+                if Color_Sensor2.color != Color.RED:
+                    sideFunctions.SweeperStallDetection() 
+
+        robot.stop
+        secondsMoved = ev3.timer
+        wait(100)
+
+        if secondsMoved + driveTimeBuffer < driveTime:
+            sideFunctions.AvoidObStacle(avoidLeft = 1)
+        else:
+            sideFunctions.MoveCloseToWall()              
+
+
 class main():
     def main():
         RobotMovement.movement()
