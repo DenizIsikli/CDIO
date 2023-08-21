@@ -266,11 +266,6 @@ class main:
             # Release the camera/ Destroy the windows
             cv2.destroyAllWindows()
 
-#Second main method for the Ev3 program
-#class main2:
-#    def main2():
-        
-#        Ev3.sideFunctions.Restart
-
 if __name__ == "__main__":
     main.main()
+  
